@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CG: CS Decision Matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F2F4F6; --surface:#FFFFFF; --ink:#18212B; --muted:#5B6773; --line:#D9DEE3;
+  --amber:#E3A008; --amber-soft:#FFF4D6;
+  --yes:#1E7A4C; --yes-soft:#E2F4EA; --no:#B3382C; --no-soft:#FBE8E5; --info:#2B5F9E; --info-soft:#E4EEF9;
+  --head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#12171D; --surface:#1B232C; --ink:#E8ECEF; --muted:#9AA6B2; --line:#2D3844;
+    --amber:#F2B632; --amber-soft:#3A2F10;
+    --yes:#58C28D; --yes-soft:#16342A; --no:#F08A7E; --no-soft:#3B1E1B; --info:#7FB0EB; --info-soft:#1B2E45;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12171D; --surface:#1B232C; --ink:#E8ECEF; --muted:#9AA6B2; --line:#2D3844;
+  --amber:#F2B632; --amber-soft:#3A2F10;
+  --yes:#58C28D; --yes-soft:#16342A; --no:#F08A7E; --no-soft:#3B1E1B; --info:#7FB0EB; --info-soft:#1B2E45;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body)}
+a{color:var(--info)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1080px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.bar h1{font:700 20px/1 var(--head);margin:0;margin-right:auto;display:flex;align-items:center;gap:8px}
+.bar h1::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px var(--amber-soft)}
+input[type=search]{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);min-width:200px;flex:1;max-width:320px}
+input:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+nav.jump{max-width:1080px;margin:0 auto;padding:0 16px 10px;display:flex;gap:8px;overflow-x:auto}
+nav.jump a{white-space:nowrap;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--surface);padding:5px 12px;border-radius:999px;font-size:14px;font-weight:500}
+nav.jump a:hover{border-color:var(--amber)}
+main{max-width:1080px;margin:0 auto;padding:20px 16px 64px}
+.intro{color:var(--muted);max-width:68ch;margin:0 0 24px}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;font-size:14px}
+section.case{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:24px;overflow:hidden}
+section.case>h2{font:700 22px/1.2 var(--head);margin:0;padding:18px 20px;border-bottom:1px solid var(--line)}
+section.case>h2 small{display:block;font:400 14px/1.4 var(--body);color:var(--muted);margin-top:4px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th,td{text-align:left;vertical-align:top;padding:12px 16px;border-bottom:1px solid var(--line);font-size:15px}
+th{font-weight:600;color:var(--muted);font-size:13px;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td:first-child{width:26%;font-weight:500}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:1px 9px;border-radius:6px;margin-right:6px;white-space:nowrap}
+.yes{background:var(--yes-soft);color:var(--yes)} .no{background:var(--no-soft);color:var(--no)} .info{background:var(--info-soft);color:var(--info)} .warn{background:var(--amber-soft);color:var(--ink)}
+ul{margin:0;padding-left:18px} li{margin:2px 0}
+.note{margin:0;padding:14px 20px;background:var(--amber-soft);border-top:1px solid var(--line);font-size:15px}
+.note b{font-weight:600}
+code{font:500 13px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 6px;border-radius:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.chips code{white-space:nowrap}
+.empty{display:none;text-align:center;color:var(--muted);padding:40px 0}
+@media (max-width:600px){h1{font-size:18px}.bar h1{width:100%}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <h1>CG: CS decision matrix</h1>
+    <input type="search" id="q" placeholder="Search a scenario or keyword" aria-label="Search scenarios">
+  </div>
+  <nav class="jump" aria-label="Scenarios">
+    <a href="#cancel">Cancellation</a>
+    <a href="#variant">Variant or item change</a>
+    <a href="#damage">Damaged / defective</a>
+    <a href="#inquiry">Product inquiry</a>
+    <a href="#received">Custom orders</a>
+    <a href="#returns">Normal returns</a>
+    <a href="#negotiation">Partial refund negotiation</a>
+    <a href="#rts">RTS</a>
+    <a href="#risk">High-risk customers</a>
+    <a href="#outbound">Outbound</a>
+  </nav>
+</header>
+
+<main>
+  <p class="intro">Find the scenario, answer the question in the first column, then follow the action. Always acknowledge the customer first, then work the case. To escalate to the <b>store manager (KMP)</b>, send the Helpscout link to the <b>KMP channel</b> of the CG CSR team with the context. SP = Service Point, HS = Helpscout, WFTU = waiting for tracking update, CS Sheet = Customer Support Sheet, RTS = return to sender, COGS = our cost for the item.</p>
+  <p class="intro" style="margin-bottom:12px"><b>Templates:</b> <a href="https://docs.google.com/document/d/1Hle9NrRUZA2uQG5q_x_ECX3aD_Tyrm7idZSnYK60wF4/edit?usp=sharing" target="_blank" rel="noopener">CS template</a>, <a href="https://docs.google.com/document/d/1rqT5JQM_0qiUpMQtlV0OC1RIEZwMEUgoQxrbYBuPGfs/edit?tab=t.lf7edi9y3kg9" target="_blank" rel="noopener">ChatGPT copy-paste (CG)</a>, <a href="https://docs.google.com/document/d/1Hle9NrRUZA2uQG5q_x_ECX3aD_Tyrm7idZSnYK60wF4/edit?tab=t.806pc15hleuk#heading=h.jwbkmmuyjcyu" target="_blank" rel="noopener">linked tab in the CS template doc</a>.</p>
+  <div class="legend">
+    <span class="tag yes">YES</span><span class="tag no">NO</span><span class="tag info">Internal</span><span class="tag warn">Customer reply</span>
+  </div>
+
+  <section class="case" id="cancel" data-s="cancellation cancel hold 24h refund store credit dispute wftu discount incentive proceed reason monitoring 100 eur cs sheet">
+    <h2>Cancellation<small>Customer asks to cancel an order</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Question</th><th>Internal action</th><th>Tell the customer</th></tr></thead>
+      <tbody>
+      <tr><td>What is the reason for the cancellation?</td>
+        <td><ul><li><b>Always check the reason first.</b> The goal is to avoid the cancellation</li><li>Work on the reason with the steps below before processing anything</li><li>Add the case to the <b>CS Sheet</b>, under <b>Cancellation monitoring</b>, right away. <b>Every</b> cancellation request goes there, whatever the outcome</li></ul></td>
+        <td>Acknowledge first. Politely ask why they want to cancel.</td></tr>
+      <tr><td>Is the customer cancelling only to change the variant or item?</td>
+        <td>Do <b>not</b> process it as a cancellation. Assist with the exchange instead. See <a href="#variant">Variant or item change</a>.</td>
+        <td>Say we will take care of the change for them.</td></tr>
+      <tr><td><span class="tag yes">YES</span>Order placed within 24H?</td>
+        <td><ul><li>HOLD the shipment: send a Slack message</li><li>Snooze the ticket to the next day</li><li>Add a note in SP with the Slack link for reference</li></ul></td>
+        <td>Acknowledge first. Say we are checking whether cancellation is still possible.</td></tr>
+      <tr><td><span class="tag no">NO</span>Order older than 24H?</td>
+        <td>No hold. Get the CG tracking #.</td>
+        <td>Explain that cancellation is no longer possible and send the CG tracking #.</td></tr>
+      <tr><td>Hold was successful?</td>
+        <td><ul><li>Offer either <b>10% discount</b> (the order <b>proceeds</b>, not cancelled) or <b>120% store credit</b> (the order is cancelled)</li></ul></td>
+        <td>Present both options and ask which they prefer. The 10% is our thank-you for letting the order go ahead.</td></tr>
+      <tr><td>Customer accepts the <b>10% discount</b><br><small style="color:var(--muted);font-weight:400">Order proceeds</small></td>
+        <td><ul><li><b>Do not cancel.</b> The 10% is an incentive for not cancelling</li><li>Tell the team in the Slack thread to release the hold so the order ships</li><li>Add it to the refund approval case (10%). KMP's approval is not needed</li><li>Once the refund approval comes through, refund the 10%</li></ul></td>
+        <td>Confirm the order will go ahead, the 10% discount, and the timeline.</td></tr>
+      <tr><td>Customer accepts the <b>120% store credit</b><br><small style="color:var(--muted);font-weight:400">Order is cancelled</small></td>
+        <td><ul><li><span class="tag info">Processing</span>Cancel in SP</li><li><span class="tag info">WFTU</span>Open a dispute in SP, then refund</li><li>Confirm the order is refunded or cancelled in SP <b>before</b> issuing the credit</li><li><b>No approval needed.</b> The VA can issue the 120% store credit right away once the customer agrees</li></ul></td>
+        <td>Confirm the outcome and timeline.</td></tr>
+      <tr><td>Customer rejects both offers and still wants to cancel</td>
+        <td><ul><li>Only after the steps above were done</li><li><span class="tag yes">Under 100 EUR</span>We can process the refund (<b>Processing:</b> cancel in SP. <b>WFTU:</b> dispute in SP, then refund)</li><li><span class="tag no">100 EUR or more</span>Do not process. Send the Helpscout link to the <b>KMP channel</b> (CG CSR team) with the context</li></ul></td>
+        <td>Under 100 EUR: confirm the refund and timeline. 100 EUR or more: acknowledge and hold while the store manager replies.</td></tr>
+      <tr><td>Customer complains or pushes back</td>
+        <td><ul><li>Create a note</li><li>Send the Helpscout link to the <b>KMP channel</b> (CG CSR team) with the context (a one-line summary of the customer's argument, and ask what we can offer)</li><li>Do not snooze. Keep the ticket Active in Helpscout</li></ul></td>
+        <td>Acknowledge and hold while the store manager replies.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note"><b>Monitoring:</b> every cancellation request goes into the <b>Customer Support Sheet</b>, under <b>Cancellation monitoring</b>, as soon as it comes in. The sheet should have all of them, even when the order proceeds or the customer only wants a variant change.</p>
+  </section>
+
+  <section class="case" id="variant" data-s="variant color change item exchange duplicate draft order invoice price difference shopify cancel original sp">
+    <h2>Variant or item change<small>Customer wants to cancel in order to change the color, variant, or item</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Question</th><th>Internal action</th><th>Tell the customer</th></tr></thead>
+      <tbody>
+      <tr><td>Customer wants to cancel to change variant (e.g. color) or item</td>
+        <td><ul><li>The customer does <b>not</b> need to cancel. We do the exchange ourselves</li><li>Duplicate the existing order in Shopify</li><li>In the Draft order that gets generated, replace the <b>variant</b> (color change) or the <b>product</b> (item change)</li><li>Edit the price in Shopify so it is <b>0</b> if it is the same product or value</li><li>Reason: <code>exchange</code> or <code>change color</code></li><li><b>CANCEL the original order in SP and in Shopify</b></li></ul></td>
+        <td>Acknowledge first. Say we will take care of the exchange so they do not need to cancel.</td></tr>
+      <tr><td><span class="tag yes">YES</span>Is there a price difference?</td>
+        <td>Send an invoice for the difference via Shopify.</td>
+        <td>Explain the difference and that an invoice will be sent via Shopify.</td></tr>
+      <tr><td><span class="tag no">NO</span>Same product or value?</td>
+        <td>Keep the Draft order price at 0. No invoice.</td>
+        <td>Confirm the change and the timeline.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note"><b>Why we do this:</b> it is easier for the customer. They do not have to cancel and reorder, so we exchange it for them.</p>
+  </section>
+
+  <section class="case" id="damage" data-s="damaged defective quality photo video resend replacement refund manager multiple orders">
+    <h2>Damaged or defective item received<small>Check for proof first</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Question</th><th>Internal action</th><th>Tell the customer</th></tr></thead>
+      <tbody>
+      <tr><td><span class="tag yes">YES</span>Customer sent photos or videos?</td>
+        <td>Add to the <b>Quality issue</b> tab.</td>
+        <td>Apologize. Offer a <b>FREE resend</b> right away. <b>No need to return</b> the damaged item.</td></tr>
+      <tr><td><span class="tag yes">YES</span> but customer rejects the resend</td>
+        <td><ul><li>Add a note and add to the quality sheet</li><li>See <a href="#negotiation">Partial refund negotiation</a> for how far we can go</li><li><span class="tag yes">Under 100 EUR</span>No KMP approval needed. Ask for the refund in SP</li><li><span class="tag no">100 EUR or more</span>Send the Helpscout link to the <b>KMP channel</b> (CG CSR team) with the context: ask if there is another option to offer. <b>Do not snooze.</b> Keep the ticket on Active status in Helpscout</li></ul></td>
+        <td>Under 100 EUR: acknowledge and confirm the refund. 100 EUR or more: say we are reviewing other options.</td></tr>
+      <tr><td><span class="tag no">NO</span>No photos or proof sent?</td>
+        <td>Wait for proof before escalating.</td>
+        <td>Ask for photos or videos. Even if blurry, ask for clearer ones. Explain we need them to escalate the case, that a replacement is sent once damage is verified, and that there is <b>no need to return</b> the item.</td></tr>
+      <tr><td>Customer asks for a <b>prepaid return label</b> (damaged or defective item)</td>
+        <td><ul><li>We do <b>not</b> offer a prepaid label for damaged or defective items</li><li>Push for the <b>free replacement</b> instead (no return needed)</li><li>If the customer keeps insisting: add a note, send the Helpscout link to the <b>KMP channel</b> (CG CSR team) with the context, and keep the ticket Active (do not snooze)</li></ul></td>
+        <td>Explain that for damage we send a free replacement and they do not need to return anything.</td></tr>
+      <tr><td>Customer has multiple orders</td>
+        <td>Clarify which item is damaged. Replace only that item.</td>
+        <td>Ask which item has the damage.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note"><b>Escalation:</b> if the customer stays firm, add a note and send the Helpscout link to the <b>KMP channel</b> with the context. <b>Do not snooze</b> escalated tickets; leave them on Active status in Helpscout. Keep the message one line with context; bullets only if needed. If SP is slow to respond (an answer should come within 24 hrs), ask for help in Slack and mention that a dispute was opened in SP.</p>
+  </section>
+
+  <section class="case" id="inquiry" data-s="product inquiry slack helpscout question">
+    <h2>Product inquiry<small>Customer asks about a product</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Question</th><th>Internal action</th><th>Tell the customer</th></tr></thead>
+      <tbody>
+      <tr><td><span class="tag yes">YES</span>Slack already has a chat for this product?</td>
+        <td>Search Slack using the <b>product name in English</b>. Copy all the info there; it may already answer the concern.</td>
+        <td>Acknowledge, then reply with the info.</td></tr>
+      <tr><td><span class="tag no">NO</span>Nothing in Slack yet?</td>
+        <td>Ask in the product questions Slack channel. Add the Slack link in HS so the thread is easy to find again.</td>
+        <td>Acknowledge first and say we are confirming.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="case" id="received" data-s="custom order replacement missing parts longer cable different item supplier channel ext approval kmp quote draft orders slack">
+    <h2>Custom order for replacement or missing parts<small>Customer needs a longer cable, a different item, a missing or replacement part, etc.</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Question</th><th>Internal action</th><th>Tell the customer</th></tr></thead>
+      <tbody>
+      <tr><td>Customer needs an add-on, a replacement part, or a different item</td>
+        <td><ul><li>Post in the Slack channel of the <b>applicable supplier</b> (each supplier has their own channel, see the list below)</li><li>Include: order #, product, what the customer needs, and ask for the cost</li><li>Add the Slack link to HS</li></ul></td>
+        <td>Acknowledge first. Say we are checking with the supplier.</td></tr>
+      <tr><td>Supplier quote is ready</td>
+        <td><ul><li><b>Every custom order needs KMP's approval</b></li><li>Send it to the <b>KMP channel</b>: one line with the order #, the part, and the supplier's quote, and ask how much to charge. Never leave out the quote</li></ul></td>
+        <td>Acknowledge and say we are confirming the details.</td></tr>
+      <tr><td>KMP approved</td>
+        <td><ul><li>Create a <b>CUSTOM ORDER</b> in SP</li><li>Link the Slack convo with the supplier</li><li>Document it in the <b>DRAFT orders</b> tab</li><li>Monitor every 2-3 days until tracking exists</li></ul></td>
+        <td>Share the approved price (or that it is free of charge). Send the new tracking once available.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note"><b>Supplier channels:</b> there is no separate order issues or CS concerns channel. Always tag the channel of the supplier for that product.
+      <span class="chips"><code>ext-colin-gair-1-huan</code><code>ext-colin-gair-1-ivy</code><code>ext-colin-gair-1-jeffrey</code><code>ext-colin-gair-1-leon</code><code>ext-colin-gair-1-steve</code><code>ext-colin-gair-nancy</code><code>ext-colin-gair1-miahu</code></span></p>
+  </section>
+
+  <section class="case" id="returns" data-s="return change of mind partial refund store credit website match color china warehouse escalate supplier return address form email returned goods packaging customs stuck delivered">
+    <h2>Normal return workflow<small>Returns are handled by email. Includes related special cases</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Scenario</th><th>Internal action</th><th>Tell the customer</th></tr></thead>
+      <tbody>
+      <tr><td>Wants to return: change of mind, won't send photos</td>
+        <td><ul><li>Normal return workflow: <b>20% partial refund</b> or <b>30% store credit</b></li><li>Attach the <b>form for the store</b> right away</li><li><b>Copy and paste the supplier's return address</b> into the reply. Do not forget this</li></ul></td>
+        <td>Offer both options. Include the form and the return address.</td></tr>
+      <tr><td>Which return address do we give?</td>
+        <td>It <b>depends on the supplier</b>. Check the ChatGPT knowledge base or the <a href="https://docs.google.com/document/d/1Hle9NrRUZA2uQG5q_x_ECX3aD_Tyrm7idZSnYK60wF4/edit?usp=sharing" target="_blank" rel="noopener">customer support template</a> for that supplier's address.</td>
+        <td>Send the supplier's return address with the form.</td></tr>
+      <tr><td>Customer is sending the item back</td>
+        <td><ul><li>Make sure <b>RETURNED GOODS</b> is written on the outside packaging</li><li>Refund <b>only after</b> the item is delivered to the warehouse</li><li>Once it is delivered, inform the customer, then refund</li></ul></td>
+        <td>Ask them to write <b>RETURNED GOODS</b> on the outside of the package. Say the refund is processed once it is delivered to the warehouse.</td></tr>
+      <tr><td>Return is stuck in customs</td>
+        <td><b>Firm:</b> it must be delivered to the warehouse before we refund. No refund while it is stuck.</td>
+        <td>Politely explain that the refund is processed once the item is delivered to the warehouse.</td></tr>
+      <tr><td>Asks for a <b>prepaid return label</b> (change of mind, or item is not damaged)</td>
+        <td><ul><li>We do not offer prepaid labels</li><li>If the customer insists, politely explain first that because it is a change of mind or the product is not damaged, the item must be sent back to the <b>supplier's return address</b></li><li>If it escalates: add a note, send the Helpscout link to the <b>KMP channel</b> (CG CSR team) with the context, and keep the ticket Active (do not snooze)</li></ul></td>
+        <td>Politely educate: returns for change of mind are sent to the supplier's return address.</td></tr>
+      <tr><td>Wants to return: "doesn't match the website"</td>
+        <td>Ask for a photo to compare. If it is only a color difference, proceed with the normal return workflow above.</td>
+        <td>Politely explain that the difference is due to color.</td></tr>
+      <tr><td>Asks if the product comes from China</td>
+        <td>Reply directly.</td>
+        <td>Say we have different warehouses in Europe, the US and Asia.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="case" id="negotiation" data-s="partial refund negotiation cogs cost margin size issue size chart free replacement resend dispute quality issue approval kmp channel percent eur draft order">
+    <h2>Partial refund negotiation<small>How far can we go? Work this out before you offer a refund</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Scenario</th><th>Internal action</th><th>Tell the customer</th></tr></thead>
+      <tbody>
+      <tr><td>Customer wants a partial refund, or pushes for more</td>
+        <td><ol style="margin:0;padding-left:18px"><li>Check the <b>COGS in SP</b>. This is our cost</li><li>Take what the customer paid (Helpscout right side panel, or Shopify) and deduct the COGS. Convert to <b>EUR</b> so the numbers can be compared</li></ol>The result shows how much room we have to negotiate.</td>
+        <td>Acknowledge first. Say we are reviewing the options.</td></tr>
+      <tr><td>Size issue: <b>most cases</b></td>
+        <td><ul><li>Offer a <b>FREE replacement</b>. We shoulder the cost. This is more efficient than a refund</li><li><b>The customer must agree first</b></li><li>Share the correct <b>size chart based on SP</b></li><li>Use the Draft order workflow: duplicate the existing order and set the price to 0 (same steps as <a href="#variant">Variant or item change</a>)</li></ul></td>
+        <td>Offer the free replacement, share the size chart, and ask them to confirm.</td></tr>
+      <tr><td>Size issue where the supplier is at fault<br><small style="color:var(--muted);font-weight:400">The website size chart matches SP</small></td>
+        <td><ul><li>Check the website size chart against SP first</li><li>If the website is fine versus SP, open a <b>dispute in SP</b> for a <b>free RESEND by the supplier</b></li></ul></td>
+        <td>Apologize. Say we are arranging a free resend.</td></tr>
+      <tr><td>Quality issue</td>
+        <td><ul><li>Use the COGS room above to decide how far the partial refund can go (for example 30% or 40%)</li><li><span class="tag yes">Under 100 EUR</span>No KMP approval needed. Process the partial refund</li><li><span class="tag no">100 EUR or more</span>Send the context to the <b>KMP channel</b> for approval: Helpscout link, order #, amount paid (EUR), COGS (EUR), the issue, and the % you propose. Once KMP approves, refund</li></ul></td>
+        <td>Under 100 EUR: confirm the refund and the timeline. 100 EUR or more: acknowledge and hold while we confirm.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note"><b>Reminder:</b> a partial refund under 100 EUR does not need KMP's approval. From 100 EUR up, send it to the KMP channel. The more context in one message (paid, COGS, % proposed), the faster it gets approved.</p>
+  </section>
+
+  <section class="case" id="rts" data-s="rts return to sender address issue local courier redelivery fee custom order rejected restocking fee size remote address refund supplier slack dispatch">
+    <h2>RTS: return to sender<small>The parcel is on its way back to the sender</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Scenario</th><th>Internal action</th><th>Tell the customer</th></tr></thead>
+      <tbody>
+      <tr><td>Address issue, as per the local courier</td>
+        <td><ul><li>Check <b>immediately</b> in the supplier's Slack channel if they can get a document from the local courier showing the address is wrong</li><li>Ask the supplier if a <b>redelivery</b> is possible</li><li>If the customer says the address is correct: ask if they are OK with a redelivery, and ask for the <b>detailed address</b> and <b>mobile number</b> again</li><li>If reshipment is no longer possible: we usually pay <b>7 EUR</b> as a <b>custom order</b> (redelivery fee)</li></ul></td>
+        <td>If the customer emailed: acknowledge the email first. Ask for the complete address, and ask if anyone has messaged them. Say that, as per our check, there is an address issue, and we are checking with dispatch.</td></tr>
+      <tr><td>Rejected by the customer</td>
+        <td><ul><li>Use the <b><a href="https://docs.google.com/document/d/1Hle9NrRUZA2uQG5q_x_ECX3aD_Tyrm7idZSnYK60wF4/edit?usp=sharing" target="_blank" rel="noopener">customer support template</a></b> for this</li><li>Collect a <b>10% restocking fee</b></li><li>We cannot get the item back to resend it</li></ul></td>
+        <td>Explain that the customer needs to collect the item and go through the return process to get a refund. A parcel returned to the sender is not sent back to us. It gets destroyed at the international warehouse. Mention the 10% restocking fee.</td></tr>
+      <tr><td>RTS due to size<br><small style="color:var(--muted);font-weight:400">No delivery attempt was made to the customer</small></td>
+        <td><ul><li>Verify with the supplier if there is any way to ship it</li><li>If there is no way to ship it, offer <b>other products</b> to the customer</li></ul></td>
+        <td>Acknowledge first. Explain it could not be delivered and offer the alternatives.</td></tr>
+      <tr><td>Remote address</td>
+        <td><ul><li>Usually visible in the supplier's Slack channel or in SP</li><li>Proceed with a <b>full refund</b>. This is rare</li></ul></td>
+        <td>Explain the address is remote and cannot be delivered. Confirm the full refund and the timeline.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="case" id="risk" data-s="high risk threatening customer kmp channel slack escalate">
+    <h2>High-risk or threatening customers<small>Any scenario above</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Scenario</th><th>Internal action</th></tr></thead>
+      <tbody>
+      <tr><td>High-risk customer, or a customer who is threatening us</td>
+        <td>Send it to the <b>KMP channel</b> in Slack with the Helpscout link and the context. Do not negotiate on your own.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="case" id="outbound" data-s="outbound address error oos out of stock pickup collection chatgpt prompt template cs sheet service point daily tasks">
+    <h2>Outbound cases<small>Use the <a href="https://docs.google.com/document/d/1rqT5JQM_0qiUpMQtlV0OC1RIEZwMEUgoQxrbYBuPGfs/edit?tab=t.lf7edi9y3kg9" target="_blank" rel="noopener">ChatGPT copy-paste doc</a> for the case and copy-paste the template</small></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Scenario</th><th>Action</th></tr></thead>
+      <tbody>
+      <tr><td>Address error</td>
+        <td><ul><li>Check <b>Service Point</b> and the <b>CS Sheet</b></li><li>Use the ChatGPT prompt template for outbound</li><li>Document it in <b>Daily tasks</b></li></ul></td></tr>
+      <tr><td>OOS: out of stock</td>
+        <td>Use the ChatGPT prompt for outbound, then copy and paste the template.</td></tr>
+      <tr><td>Pickup or collection</td>
+        <td><ul><li>Always check the <b>CS Sheet</b></li><li>Use the ChatGPT prompt for outbound, then copy and paste the template</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <p class="empty" id="empty">No scenario matches that search.</p>
+</main>
+
+<script>
+(function(){
+  var q=document.getElementById('q'),cards=[].slice.call(document.querySelectorAll('section.case')),empty=document.getElementById('empty');
+  q.addEventListener('input',function(){
+    var v=q.value.trim().toLowerCase(),shown=0;
+    cards.forEach(function(c){
+      var hit=!v||(c.dataset.s+' '+c.textContent).toLowerCase().indexOf(v)>-1;
+      c.style.display=hit?'':'none'; if(hit)shown++;
+    });
+    empty.style.display=shown?'none':'block';
+  });
+})();
+</script>
+</body>
+</html>
